@@ -61,11 +61,8 @@ class Agent():
         Return a the index of the action [0..N).
         """
         action_dist = self.tf_sess.run(self.output, feed_dict = {self.input:[state]}) # Run the network. Returns action distribution from network (Probability for action 0 and 1, sum is 1)
-        #print(action_dist[0]) # The tf_sess.run() returns an array of outputs. Therefore the index [0]. (Contains probability for which action to take based on current state)
         action = np.random.choice(action_dist[0], p=action_dist[0]) # Choose an action with probability from action_dist (Returns the probability of taken action
-        #print(action)
         action = np.argmax(action_dist == action) # Get the argument of the chosen action (0 or 1)
-        #print(action)
         return action
 
     def record_action(self, state0, action, reward, state1, done):
@@ -95,9 +92,9 @@ class Agent():
         discounted_rewards = discounted_rewards - np.mean(discounted_rewards[:]) # 0 mean
         discounted_rewards = discounted_rewards / np.std(discounted_rewards[:]) # 1 unit variance
         experiences[:, 2] = discounted_rewards
-    #    np.random.shuffle(experiences[:, 2])
 
         # Shuffle for better learning
+        #    np.random.shuffle(experiences[:, 2]) # This makes it not work at all :P
 
         # Feed the experiences through the network with rewards to compute and
         # minimize the loss.
@@ -105,4 +102,3 @@ class Agent():
         for i in range(3): # Train more than one time !! Worked well
             self.tf_sess.run(self.train_op, feed_dict = feed_dict)
         self.replay.clear()
-    #    self.tf_sess.run(self.train_op, grads)
